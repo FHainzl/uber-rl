@@ -13,20 +13,15 @@ from publisher import Publisher
 
 from utils import human_time
 
-x = 0
-
 
 class FciReceiver:
     def __init__(self):
-
         # Subscriber node
         self.image_sub = rospy.Subscriber(topic, FrankaState, self.callback)
 
     def callback(self, data):
-        if x == 0:
-            for line in data:
-                print line
-            x = 1
+        print data.dtheta
+
         if print_received:
             time = human_time(data.header.stamp)
             rospy.loginfo("Message received from {}".format(time))
