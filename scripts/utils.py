@@ -5,7 +5,7 @@ import rospy
 
 def human_time(time_stamp):
     ts = time_stamp.to_time()
-    return datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.utcfromtimestamp(ts).strftime('%H:%M:%S.%f')
 
 
 def get_dy(param):
