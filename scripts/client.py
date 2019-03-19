@@ -4,23 +4,24 @@ from rospy import sleep
 
 
 class Client(object):
-    def __init__(self, port, host="192.168.1.234"):
+    def __init__(self, port, host, bufsize):
         self.address = (host, port)
+        self.bufsize = bufsize
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(self.address)
         sleep(0.5)
 
     def send_array(self, array):
-        if array.size > 100:
+        if array.size > 50:
             raise ValueError("Array too big! Increase bufsize")
         s = array.tostring()
-        print 'Sent to server: '
-        print array
         self.client_socket.send(s)
-        while self.client_socket.recv(2048) != b"ack":
+        while self.client_socket.recv(self.bufsize) != b"ack":
             print "Waiting for ack..."
             sleep(0.1)
-        print "<ack> received!"
+
+    def send_flush(self):
+        self.client_socket.send(b"flush")
 
     def __del__(self):
         disconnect = b"disconnect"
@@ -30,7 +31,7 @@ class Client(object):
 
 
 if __name__ == '__main__':
-    client = Client(port=47474)
+    client = Client(port=47474, host="192.168.1.234", bufsize=1024)
     while True:
         x = np.random.rand(100)
         client.send_array(x)

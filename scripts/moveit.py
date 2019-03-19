@@ -27,8 +27,10 @@ def move_randomly(group, max_dist_per_dimension=0.01):
     pose = group.get_current_pose()
     print pose
     m = max_dist_per_dimension
+    x_delta = random.uniform(-m, m)
     y_delta = random.uniform(-m, m)
     z_delta = random.uniform(-m, m)
+    pose.pose.position.x += x_delta
     pose.pose.position.y += y_delta
     pose.pose.position.z += z_delta
     group.set_pose_target(pose)
@@ -53,11 +55,12 @@ def main():
     # joints[0] += pi / 8
     # group.
 
+    r = rospy.Rate(20)
     while True:
         try:
-            move_randomly(group,max_dist_per_dimension=0.05)
+            move_randomly(group, max_dist_per_dimension=0.03)
             # rospy.sleep(0.1)
-            rospy.sleep(0.1)
+            r.sleep()
         except KeyboardInterrupt:
             break
 

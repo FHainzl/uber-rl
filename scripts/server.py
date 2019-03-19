@@ -3,19 +3,19 @@ import numpy as np
 
 
 class Server:
-    def __init__(self, port):
+    def __init__(self, port, bufsize):
         self.address = ("", port)
+        self.bufsize = bufsize
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(self.address)
         self.server_socket.listen(5)
         print "Listening for client . . ."
         self.conn, self.conn_address = self.server_socket.accept()
         print "Connected to client at ", self.conn_address, '\n'
-        self.loop()
 
     def loop(self):
         while True:
-            output = self.conn.recv(2048)
+            output = self.conn.recv(self.bufsize)
             if output.strip() == b"disconnect":
                 print "Received disconnect message.  Shutting down."
                 break
@@ -40,4 +40,4 @@ class Server:
 
 
 if __name__ == '__main__':
-    serv = Server(47474)
+    serv = Server(47474, 1024)
