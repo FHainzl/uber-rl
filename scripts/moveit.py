@@ -13,6 +13,18 @@ from math import pi as pi
 import random
 
 
+def move_relative(group, dx=0.0, dy=0.0, dz=0.0):
+    pose = group.get_current_pose()
+    print pose
+    pose.pose.position.x += dx
+    pose.pose.position.y += dy
+    pose.pose.position.z += dz
+    group.set_pose_target(pose)
+    group.go(wait=True)
+    group.stop()
+    group.clear_pose_targets()
+
+
 def move_z_relative(group, z_delta):
     pose = group.get_current_pose()
     print pose
@@ -21,6 +33,8 @@ def move_z_relative(group, z_delta):
     group.go(wait=True)
     group.stop()
     group.clear_pose_targets()
+
+    rospy.sleep(0.1)
 
 
 def move_randomly(group, max_dist_per_dimension=0.01):
@@ -39,6 +53,20 @@ def move_randomly(group, max_dist_per_dimension=0.01):
     group.clear_pose_targets()
 
 
+def move_absolute(group, x, y, z):
+    pose = group.get_current_pose()
+    print pose
+    pose.pose.position.x = x
+    pose.pose.position.y = y
+    pose.pose.position.z = z
+    group.set_pose_target(pose)
+    group.go(wait=True)
+    group.stop()
+    group.clear_pose_targets()
+
+    rospy.sleep(0.1)
+
+
 def main():
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node("panda_move_group", anonymous=True, disable_signals=True)
@@ -54,15 +82,56 @@ def main():
     # joints = group.get_current_joint_values()
     # joints[0] += pi / 8
     # group.
+    #
 
-    r = rospy.Rate(20)
-    while True:
-        try:
-            move_randomly(group, max_dist_per_dimension=0.03)
-            # rospy.sleep(0.1)
-            r.sleep()
-        except KeyboardInterrupt:
-            break
+    pose = group.get_current_pose().pose
+    joints = group.get_current_joint_values()
+    position = pose.position
+    print("Current pos:", position.x, position.y, position.z)
+    print(pose)
+    print("Current joint angles:", joints)
+
+    start_pos = (-0.25, -0.4, 0.6)
+    dist = 0.2
+    move_relative(group, dx=dist, dz=-dist)
+    rospy.sleep(1)
+
+    # Go to all edges
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dx=dist)
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dx=-dist)
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dz=dist)
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dz=-dist)
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dx=dist, dz=dist)
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dx=-dist, dz=-dist)
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dx=dist, dz=-dist)
+    # move_absolute(group, *start_pos)
+    # move_relative(group, dx=-dist, dz=dist)
+    # move_absolute(group, *start_pos)
+
+    # Do borders
+    move_absolute(group, *start_pos)
+    move_relative(group, dx=dist, dz=dist)
+    move_relative(group, dx=-2 * dist)
+    move_relative(group, dz=-2 * dist)
+    move_relative(group, dx=2 * dist)
+    move_relative(group, dz=2 * dist)
+    move_absolute(group, *start_pos)
+
+    # r = rospy.Rate(20)
+    # while True:
+    #     try:
+    #         move_randomly(group, max_dist_per_dimension=0.03)
+    #         # rospy.sleep(0.1)
+    #         r.sleep()
+    #     except KeyboardInterrupt:
+    #         break
 
 
 if __name__ == '__main__':
