@@ -1,0 +1,22 @@
+<launch>
+    <arg name="setup" default="false"/>
+
+    <include
+            file="/opt/ros/kinetic/share/franka_control/launch/franka_control.launch">
+        <arg name="robot_ip" value="172.16.0.2"/>
+        <arg name="load_gripper" value="false"/>
+    </include>
+    <include
+            file="/home/fab/catkin_ws/src/realsense/realsense2_camera/launch/rs_camera.launch">
+    </include>
+
+    <node pkg="uber-cv" type="image_to_angle.py" name="image2angle"
+          output="screen"/>
+    <node pkg="uber-rl" type="clock.py" name="clock" output="screen"/>
+    <node pkg="uber-rl" type="connector.py" name="connector" output="screen"/>
+    <node pkg="uber-rl" type="actor.py" name="actor" output="screen"/>
+    <group if="$(arg setup)">
+        <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="reconfigure"/>
+        <node type="rviz" name="rviz" pkg="rviz"/>
+    </group>
+</launch>

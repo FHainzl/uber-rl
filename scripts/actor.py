@@ -14,6 +14,6 @@ if __name__ == '__main__':
     node_name = "actor"
     rospy.init_node(node_name, anonymous=False)
 
-    server = Server(c["port_local_server"], c["bufsize"])
+    server = Server(c["ROS_PORT"], c["bufsize"])
     server.callback = server_callback
     server.loop()

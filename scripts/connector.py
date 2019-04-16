@@ -7,12 +7,13 @@ import message_filters
 from sensor_msgs.msg import JointState, TimeReference
 from franka_msgs.msg import FrankaState
 
-from config import config as c
+from config import config
 from client import Client
 
 
 class Connector(object):
-    def __init__(self):
+    def __init__(self, config):
+        self.c = config
         self.last_clock = None
         self.clock_sub = message_filters.Subscriber("/tick", TimeReference)
         self.angle_sub = message_filters.Subscriber("/angle", JointState)
@@ -20,34 +21,35 @@ class Connector(object):
             "/franka_state_controller/franka_states",
             FrankaState)
 
-        self.client = Client(port=c["port_remote_server"], host=c["remote_ip"],
-                             bufsize=c["bufsize"])
+        self.client = Client(port=self.c["RL_PORT"],
+                             host=self.c["RL_IP"],
+                             bufsize=self.c["bufsize"])
 
-        print "Starting..."
         rospy.sleep(1)
+        rospy.loginfo("Starting to transmit Data to RL machine!")
 
         self.ts = message_filters.ApproximateTimeSynchronizer(
             [self.clock_sub, self.angle_sub, self.panda_sub],
-            slop=c["msg_proximity"],
-            queue_size=c["message_filter_q_size"])
+            slop=self.c["msg_proximity"],
+            queue_size=self.c["message_filter_q_size"])
         self.ts.registerCallback(self.callback)
 
     def callback(self, clock, angle, panda):
         this_clock = clock.header.stamp.to_sec()
-        if c["verbose"]:
+        if self.c["verbose"]:
             self.print_times(clock, angle, panda)
         try:
             # Check if every time step is sent
             # If time difference bigger than 1.5 times period, let server know
             dt = this_clock - self.last_clock
             print dt
-            if dt > 1.5 * c["clock_freq"] ** -1:
+            if dt > 1.5 * self.c["clock_freq"] ** -1:
                 self.client.send_flush()
             else:
                 self.send_state(angle, panda)
         except TypeError:
             # For first iteration
-            print "Away we go!"
+            rospy.loginfo("Away we go!")
 
         self.last_clock = clock.header.stamp.to_sec()
 
@@ -76,7 +78,7 @@ if __name__ == '__main__':
     node_name = "connector"
     rospy.init_node(node_name, anonymous=False)
 
-    conn = Connector()
+    conn = Connector(config)
 
     try:
         rospy.spin()

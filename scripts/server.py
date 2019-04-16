@@ -1,6 +1,8 @@
 import socket
 import numpy as np
 
+import rospy
+
 
 class Server:
     def __init__(self, port, bufsize):
@@ -9,15 +11,15 @@ class Server:
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(self.address)
         self.server_socket.listen(5)
-        print "Listening for client . . ."
+        rospy.loginfo("Listening for client . . .")
         self.conn, self.conn_address = self.server_socket.accept()
-        print "Connected to client at ", self.conn_address, '\n'
+        rospy.loginfo("Connected to client!")
 
     def loop(self):
         while True:
             output = self.conn.recv(self.bufsize)
             if output.strip() == b"disconnect":
-                print "Received disconnect message.  Shutting down."
+                rospy.loginfo("Received disconnect message.  Shutting down.")
                 break
             elif output:
                 array = self.receive_array(output)
@@ -31,13 +33,9 @@ class Server:
 
     @staticmethod
     def callback(data):
-        print "Message received from client:"
+        rospy.loginfo("Message received from client:")
         print data
 
     def __del__(self):
         self.conn.close()
-        print "Connection closed"
-
-
-if __name__ == '__main__':
-    serv = Server(47474, 1024)
+        rospy.loginfo("Connection closed")

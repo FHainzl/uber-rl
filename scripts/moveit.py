@@ -67,6 +67,24 @@ def move_absolute(group, x, y, z):
     rospy.sleep(0.1)
 
 
+def set_joint(group, joint_id, target):
+    group.clear_pose_targets()
+    joints = group.get_current_joint_values()
+    joints[joint_id] = target
+    group.set_joint_value_target(joints)
+    group.go()
+
+
+def go_to_start(group):
+    set_joint(group, 0, -pi / 2)
+    set_joint(group, 1, 0)
+    set_joint(group, 2, 0)
+    set_joint(group, 3, -pi / 2)
+    set_joint(group, 4, 0)
+    set_joint(group, 5, pi / 2)
+    set_joint(group, 6, pi / 4)
+
+
 def main():
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node("panda_move_group", anonymous=True, disable_signals=True)
@@ -74,62 +92,29 @@ def main():
     scene = moveit_commander.PlanningSceneInterface()
     group_name = "panda_arm"
     group = moveit_commander.MoveGroupCommander(group_name)
-    # display_trajectory_publisher = rospy.Publisher(
-    #     '/move_group/display_planned_path',
-    #     moveit_msgs.msg.DisplayTrajectory,
-    #     queue_size=20)
 
-    # joints = group.get_current_joint_values()
-    # joints[0] += pi / 8
-    # group.
-    #
-
+    group.clear_pose_targets()
     pose = group.get_current_pose().pose
     joints = group.get_current_joint_values()
     position = pose.position
-    print("Current pos:", position.x, position.y, position.z)
-    print(pose)
-    print("Current joint angles:", joints)
+    print "Current pos:", position.x, position.y, position.z
+    print "Current joint angles:", joints
 
-    start_pos = (-0.25, -0.4, 0.6)
-    dist = 0.2
-    move_relative(group, dx=dist, dz=-dist)
-    rospy.sleep(1)
+    go_to_start(group)
 
-    # Go to all edges
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dx=dist)
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dx=-dist)
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dz=dist)
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dz=-dist)
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dx=dist, dz=dist)
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dx=-dist, dz=-dist)
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dx=dist, dz=-dist)
-    # move_absolute(group, *start_pos)
-    # move_relative(group, dx=-dist, dz=dist)
-    # move_absolute(group, *start_pos)
-
-    # Do borders
-    move_absolute(group, *start_pos)
-    move_relative(group, dx=dist, dz=dist)
-    move_relative(group, dx=-2 * dist)
-    move_relative(group, dz=-2 * dist)
-    move_relative(group, dx=2 * dist)
-    move_relative(group, dz=2 * dist)
-    move_absolute(group, *start_pos)
-
-    # r = rospy.Rate(20)
+    # rate = 2  # Hz
+    # r = rospy.Rate(rate)
     # while True:
     #     try:
-    #         move_randomly(group, max_dist_per_dimension=0.03)
-    #         # rospy.sleep(0.1)
-    #         r.sleep()
+    #         group.clear_pose_targets()
+    #         pose = group.get_current_pose().pose
+    #         joints = group.get_current_joint_values()
+    #         position = pose.position
+    #         print "Current pos:", position.x, position.y, position.z
+    #         print pose
+    #         print "Current joint angles:", joints
+    #
+    #         set_joint(group, 0, -pi / 2)
     #     except KeyboardInterrupt:
     #         break
 

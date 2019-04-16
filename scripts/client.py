@@ -1,5 +1,7 @@
 import socket
 import numpy as np
+
+import rospy
 from rospy import sleep
 
 
@@ -9,7 +11,8 @@ class Client(object):
         self.bufsize = bufsize
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(self.address)
-        sleep(0.5)
+        rospy.loginfo("Connected to server at " + host)
+        sleep(5)
 
     def send_array(self, array):
         if array.size > 50:
@@ -28,11 +31,3 @@ class Client(object):
         self.client_socket.send(disconnect)
         self.client_socket.close()
         print "Connection closed!"
-
-
-if __name__ == '__main__':
-    client = Client(port=47474, host="192.168.1.234", bufsize=1024)
-    while True:
-        x = np.random.rand(100)
-        client.send_array(x)
-        sleep(1)
