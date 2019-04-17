@@ -11,7 +11,7 @@ class Clock(object):
     def __init__(self, freq):
         self.freq = freq
 
-        self.pub = rospy.Publisher('/tick', TimeReference, queue_size=1)
+        self.pub = rospy.Publisher('/tick', TimeReference, queue_size=10)
         self.run()
 
     def run(self):
@@ -25,7 +25,7 @@ class Clock(object):
 
 
 if __name__ == '__main__':
-    node_name = "clock_node"
+    node_name = "clock"
     rospy.init_node(node_name, anonymous=False)
 
     m = Clock(freq=c["clock_freq"])

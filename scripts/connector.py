@@ -35,6 +35,7 @@ class Connector(object):
         self.ts.registerCallback(self.callback)
 
     def callback(self, clock, angle, panda):
+        rospy.loginfo("Message filters callback triggered!")
         this_clock = clock.header.stamp.to_sec()
         if self.c["verbose"]:
             self.print_times(clock, angle, panda)
@@ -81,6 +82,7 @@ if __name__ == '__main__':
     conn = Connector(config)
 
     try:
+        rospy.loginfo("Spinning...")
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")

@@ -1,8 +1,8 @@
 config = {
     "clock_freq": 5,
 
-    "msg_proximity": 0.1,
-    "message_filter_q_size": 10,
+    "msg_proximity": 5,
+    "message_filter_q_size": 100,
     "verbose": True,
 
     "ROS_IP": "172.16.0.1",
