@@ -35,7 +35,7 @@ class Connector(object):
     def print_times(clock, angle):
         clock_time = clock.header.stamp
         angle_time = angle.header.stamp
-        print "Now  : ", rospy.Time.now().to_sec(), angle.position[0]
+        print "Now  : ", rospy.Time.now().to_sec()
         print "clock: ", clock_time.to_sec()
         print "Angle: ", angle_time.to_sec()
 
