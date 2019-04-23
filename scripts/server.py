@@ -22,19 +22,19 @@ class Server:
                 rospy.loginfo("Received disconnect message.  Shutting down.")
                 break
             elif output:
-                array = self.receive_array(output)
-                self.callback(array)
+                timestamp, data = self.receive_array(output)
+                self.callback(timestamp, data)
                 self.conn.send(b"ack")
 
     @staticmethod
     def receive_array(data):
         array = np.fromstring(data)
-        return array
+        timestep = array[0]
+        data = array[1:]
+        return timestep, data
 
-    @staticmethod
-    def callback(data):
-        rospy.loginfo("Message received from client:")
-        print data
+    def callback(self, timestamp, data):
+        raise NotImplementedError
 
     def __del__(self):
         self.conn.close()

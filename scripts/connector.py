@@ -25,7 +25,9 @@ class Connector(object):
                              host=self.c["RL_IP"],
                              bufsize=self.c["bufsize"])
 
-        rospy.sleep(1)
+        sleep_time = 2
+        rospy.loginfo("Sleeping for {} seconds...".format(sleep_time))
+        rospy.sleep(2)
         rospy.loginfo("Starting to transmit Data to RL machine!")
 
         self.ts = message_filters.ApproximateTimeSynchronizer(
@@ -35,33 +37,36 @@ class Connector(object):
         self.ts.registerCallback(self.callback)
 
     def callback(self, clock, angle, panda):
-        rospy.loginfo("Message filters callback triggered!")
-        this_clock = clock.header.stamp.to_sec()
+        # rospy.loginfo("Message filters callback triggered!")
+        current_clock = clock.header.stamp.to_sec()
         if self.c["verbose"]:
             self.print_times(clock, angle, panda)
+
         try:
             # Check if every time step is sent
             # If time difference bigger than 1.5 times period, let server know
-            dt = this_clock - self.last_clock
+            dt = current_clock - self.last_clock
             print dt
             if dt > 1.5 * self.c["clock_freq"] ** -1:
                 self.client.send_flush()
             else:
-                self.send_state(angle, panda)
+                self.send_state(current_clock, angle, panda)
         except TypeError:
             # For first iteration
             rospy.loginfo("Away we go!")
 
-        self.last_clock = clock.header.stamp.to_sec()
+        self.last_clock = current_clock
 
-    def send_state(self, angle, panda):
+    def send_state(self, timestamp, angle, panda):
         a = angle.position[0]
         # pose is tuple with 16 entries, column-major
         pose = panda.O_T_EE
-        x, y, z = pose[-4:-1]
-        total_state = np.array([a, x, y, z])
-        print total_state
-        print total_state.dtype
+        x, y, z = pose[-4:-1]  # Last entry is 1 by convention
+        q = panda.q
+        dq = panda.dq
+        q2, q3 = q[2], q[3]
+        dq2, dq3 = dq[2], dq[3]
+        total_state = np.array([timestamp, a, q2, q3, dq2, dq3])
         self.client.send_array(total_state)
 
     @staticmethod

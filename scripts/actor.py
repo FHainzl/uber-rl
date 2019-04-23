@@ -5,15 +5,21 @@ from config import config as c
 from server import Server
 
 
-def server_callback(data):
-    rospy.Time.now().to_sec()
-    print "Received: ", rospy.Time.now().to_sec(), data
+class Actor(Server):
+    def __init__(self, port, bufsize):
+        Server.__init__(self, port, bufsize)
+
+    def callback(self, timestamp, data):
+        now = rospy.Time.now().to_sec()
+        rospy.loginfo("Received: " + str(now))
+        rospy.loginfo("Timestamp:" + str(timestamp))
+        rospy.loginfo("Delay:    " + str(now - timestamp))
+        rospy.loginfo("Actions:  " + str(data))
 
 
 if __name__ == '__main__':
     node_name = "actor"
     rospy.init_node(node_name, anonymous=False)
 
-    server = Server(c["ROS_PORT"], c["bufsize"])
-    server.callback = server_callback
+    server = Actor(c["ROS_PORT"], c["bufsize"])
     server.loop()

@@ -1,13 +1,12 @@
 <launch>
     <arg name="setup" default="false"/>
-
     <include
-            file="/opt/ros/kinetic/share/franka_control/launch/franka_control.launch">
+            file="$(env HOME)/catkin_ws/src/franka_ros/franka_control/launch/franka_control.launch">
         <arg name="robot_ip" value="172.16.0.2"/>
         <arg name="load_gripper" value="false"/>
     </include>
     <include
-            file="/home/fab/catkin_ws/src/realsense/realsense2_camera/launch/rs_camera.launch">
+            file="$(env HOME)/catkin_ws/src/realsense/realsense2_camera/launch/rs_camera.launch">
     </include>
 
     <node pkg="uber-cv" type="image_to_angle.py" name="image2angle"
