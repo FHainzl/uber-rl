@@ -20,8 +20,8 @@ class Client(object):
         s = array.tostring()
         self.client_socket.send(s)
         while self.client_socket.recv(self.bufsize) != b"ack":
-            print "Waiting for ack..."
-            sleep(0.1)
+            pass
+            # print "Waiting for ack..."
 
     def send_flush(self):
         self.client_socket.send(b"flush")
