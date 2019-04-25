@@ -25,9 +25,9 @@ class Connector(object):
                              host=self.c["RL_IP"],
                              bufsize=self.c["bufsize"])
 
-        sleep_time = 2
+        sleep_time = 1
         rospy.loginfo("Sleeping for {} seconds...".format(sleep_time))
-        rospy.sleep(2)
+        rospy.sleep(sleep_time)
         rospy.loginfo("Starting to transmit Data to RL machine!")
 
         self.ts = message_filters.ApproximateTimeSynchronizer(
@@ -58,15 +58,21 @@ class Connector(object):
         self.last_clock = current_clock
 
     def send_state(self, timestamp, angle, panda):
-        a = angle.position[0]
+        angle = angle.position[0]
         # pose is tuple with 16 entries, column-major
         pose = panda.O_T_EE
         x, y, z = pose[-4:-1]  # Last entry is 1 by convention
         q = panda.q
         dq = panda.dq
-        q2, q3 = q[2], q[3]
-        dq2, dq3 = dq[2], dq[3]
-        total_state = np.array([timestamp, a, q2, q3, dq2, dq3])
+
+        # q2, q3 = q[2], q[3]
+        # dq2, dq3 = dq[2], dq[3]
+        # total_state = np.array([timestamp, angle, q2, q3, dq2, dq3])
+
+        q4 = q[4]
+        dq4 = dq[4]
+        total_state = np.array([timestamp, angle, q4, dq4])
+
         self.client.send_array(total_state)
 
     @staticmethod
@@ -74,10 +80,21 @@ class Connector(object):
         clock_time = clock.header.stamp
         angle_time = angle.header.stamp
         panda_time = panda.header.stamp
-        print "Now  : ", rospy.Time.now().to_sec(), angle.position[0]
-        print "clock: ", clock_time.to_sec()
-        print "Angle: ", angle_time.to_sec()
-        print "Panda: ", panda_time.to_sec()
+        rospy.loginfo("Now  : " + str(rospy.Time.now().to_sec()))
+        rospy.loginfo("clock: " + str(clock_time.to_sec()))
+        rospy.loginfo("Angle: " + str(angle_time.to_sec()))
+        rospy.loginfo("Panda: " + str(panda_time.to_sec()))
+
+    def __del__(self):
+        send_zero_action()
+
+
+def send_zero_action():
+    topic = "/ros_subscriber_controller/controller_command/joint_velocity"
+    vel_pub = rospy.Publisher(topic, JointState, queue_size=1)
+    vel_msg = JointState()
+    vel_msg.velocity = [0, 0, 0, 0, 0, 0, 0]
+    vel_pub.publish(vel_msg)
 
 
 if __name__ == '__main__':
@@ -90,4 +107,5 @@ if __name__ == '__main__':
         rospy.loginfo("Spinning...")
         rospy.spin()
     except KeyboardInterrupt:
+        send_zero_action()
         print("Shutting down")

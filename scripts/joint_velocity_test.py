@@ -22,6 +22,11 @@ if __name__ == '__main__':
     topic = "/ros_subscriber_controller/controller_command/joint_velocity"
     pub = rospy.Publisher(topic, JointState, queue_size=1)
 
+    stop = [0, 0, 0, 0, 0, 0, 0]
+    stop_msg = JointState()
+    stop_msg.velocity = stop
+    pub.publish(stop_msg)
+
     move_up = [0, 0, 0, 0.3, 0, 0, 0]
     move_up_msg = JointState()
     move_up_msg.velocity = move_up
@@ -30,9 +35,7 @@ if __name__ == '__main__':
     move_down_msg = JointState()
     move_down_msg.velocity = move_down
 
-    stop = [0, 0, 0, 0, 0, 0, 0]
-    stop_msg = JointState()
-    stop_msg.velocity = stop
+
 
     rospy.sleep(1)
 

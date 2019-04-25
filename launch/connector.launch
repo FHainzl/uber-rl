@@ -1,14 +1,13 @@
 <launch>
     <arg name="setup" default="false"/>
     <include
-            file="$(env HOME)/catkin_ws/src/franka_ros/franka_control/launch/franka_control.launch">
+            file="$(env HOME)/catkin_ws/src/franka_ros/franka_example_controllers/launch/ros_subscriber_controller.launch">
         <arg name="robot_ip" value="172.16.0.2"/>
         <arg name="load_gripper" value="false"/>
     </include>
     <include
             file="$(env HOME)/catkin_ws/src/realsense/realsense2_camera/launch/rs_camera.launch">
     </include>
-
     <node pkg="uber-cv" type="image_to_angle.py" name="image2angle"
           output="screen"/>
     <node pkg="uber-rl" type="clock.py" name="clock" output="screen"/>
@@ -17,7 +16,7 @@
     <group if="$(arg setup)">
         <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="reconfigure"/>
         <node type="rviz" name="rviz" pkg="rviz"/>
-        <node name = "angle_plot" pkg="rqt_plot" type="rqt_plot"
+        <node name="angle_plot" pkg="rqt_plot" type="rqt_plot"
               args="/angle/position[0]"/>
     </group>
 </launch>
