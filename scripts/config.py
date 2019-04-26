@@ -1,7 +1,8 @@
 config = {
     "clock_freq": 5,
 
-    "msg_proximity": 0.03, # Cannot be more than 20% of 1/clock_freq for skip checking to work
+    "msg_proximity": 0.04,
+    # Cannot be more than 20% of 1/clock_freq for skip checking to work
     "message_filter_q_size": 1,
     "verbose": True,
 
