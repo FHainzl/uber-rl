@@ -26,7 +26,7 @@
         <param name="setup" value="true"/>
         <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="reconfigure"/>
         <node type="rviz" name="rviz" pkg="rviz"/>
-        <node name="angle_plot" pkg="rqt_plot" type="rqt_plot"
-              args="/angle/position[0]"/>
     </group>
+   <node name="angle_plot" pkg="rqt_plot" type="rqt_plot"
+          args="/angle/position[0]" />
 </launch>
