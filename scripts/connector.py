@@ -9,6 +9,7 @@ from franka_msgs.msg import FrankaState
 
 from config import config
 from client import Client
+from panda_publisher import PandaPublisher
 
 
 class Connector(object):
@@ -20,6 +21,8 @@ class Connector(object):
         self.panda_sub = message_filters.Subscriber(
             "/franka_state_controller/franka_states",
             FrankaState)
+        topic = "/ros_subscriber_controller/controller_command/joint_velocity"
+        self.panda_pub = PandaPublisher()
 
         self.client = Client(port=self.c["RL_PORT"],
                              host=self.c["RL_IP"],
@@ -72,6 +75,13 @@ class Connector(object):
         q4 = q[4]
         dq4 = dq[4]
         total_state = np.array([timestamp, angle, q4, dq4])
+
+        # Check joint constraints
+        if abs(q4) > self.c["state_space_constraint"]['q4']:
+            self.panda_pub.move_to_start()
+            self.client.send_flush()
+            print "Violated state space constraints"
+            rospy.sleep(3)
 
         self.client.send_array(total_state)
 

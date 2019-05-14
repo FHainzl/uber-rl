@@ -7,8 +7,8 @@ import message_filters
 from sensor_msgs.msg import JointState, TimeReference
 from franka_msgs.msg import FrankaState
 
-from config import config
-from client import Client
+from scripts.config import config
+from scripts.client import Client
 
 
 class Connector(object):

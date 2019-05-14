@@ -5,7 +5,7 @@ import message_filters
 from sensor_msgs.msg import JointState
 from franka_msgs.msg import FrankaState
 
-from utils import human_time
+from scripts.utils import human_time
 
 old_time = None
 

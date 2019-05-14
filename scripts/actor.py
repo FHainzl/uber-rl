@@ -3,23 +3,22 @@ import rospy
 from sensor_msgs.msg import JointState, TimeReference
 
 from config import config as c
+from panda_publisher import PandaPublisher
 from server import Server
 
 
 class Actor(Server):
     def __init__(self, port, bufsize):
-        self.zero_msg = JointState(velocity=[0, 0, 0, 0, 0, 0, 0])
-        self.msg = self.zero_msg
-
-        topic = "/ros_subscriber_controller/controller_command/joint_velocity"
-        self.vel_pub = rospy.Publisher(topic, JointState, queue_size=1)
-        self.clock_sub = rospy.Subscriber("/tick", TimeReference,
-                                          self.clock_callback)
         Server.__init__(self, port, bufsize)
 
+        self.msg = PandaPublisher.stop_msg
+        self.panda_pub = PandaPublisher()
+        self.clock_sub = rospy.Subscriber("/tick", TimeReference,
+                                          self.clock_callback)
+
     def clock_callback(self, data):
-        self.vel_pub.publish(self.msg)
-        if not self.msg == self.zero_msg:
+        self.panda_pub.publish(self.msg)
+        if self.msg != PandaPublisher.stop_msg:
             now = rospy.Time.now().to_sec()
             rospy.loginfo("Published:" + str(now))
 

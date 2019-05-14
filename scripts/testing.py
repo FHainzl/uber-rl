@@ -10,7 +10,6 @@ from sensor_msgs.msg import JointState
 from cv_bridge import CvBridge, CvBridgeError
 
 from franka_msgs.msg import FrankaState
-from publisher import Publisher
 
 from utils import human_time
 

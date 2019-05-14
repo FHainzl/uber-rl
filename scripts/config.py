@@ -10,6 +10,8 @@ config = {
     "ROS_PORT": 33333,
     "RL_IP": "172.16.0.3",
     "RL_PORT": 44444,
-    "bufsize": 1024
+    "bufsize": 1024,
 
+    "state_space_constraint": {'q4': 2.0},
+    
 }
