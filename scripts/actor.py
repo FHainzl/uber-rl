@@ -16,11 +16,24 @@ class Actor(Server):
         self.clock_sub = rospy.Subscriber("/tick", TimeReference,
                                           self.clock_callback)
 
+        self.timestamp = None
+
     def clock_callback(self, data):
-        self.panda_pub.publish(self.msg)
         if self.msg != PandaPublisher.stop_msg:
             now = rospy.Time.now().to_sec()
+            since_state_recoreded = now - self.timestamp
+
+            if since_state_recoreded > 2.5 * (1 / c["clock_freq"]):
+                rospy.loginfo("SINCE STATE RECORDED: " +
+                              str(since_state_recoreded))
+            if since_state_recoreded > 1.5 * (1 / c["clock_freq"]):
+                self.msg = PandaPublisher.stop_msg
+
             rospy.loginfo("Published:" + str(now))
+            rospy.loginfo("Action:   " + str(self.msg.velocity[4]))
+            rospy.loginfo("Since state recorded:" + str(since_state_recoreded))
+
+            self.panda_pub.publish(self.msg)
 
     def callback(self, timestamp, data):
         """
@@ -29,15 +42,21 @@ class Actor(Server):
         :param data:
         :return:
         """
-        now = rospy.Time.now().to_sec()
-        rospy.loginfo("Received: " + str(now))
-        rospy.loginfo("Timestamp:" + str(timestamp))
-        rospy.loginfo("Delay:    " + str(now - timestamp))
-        rospy.loginfo("Actions:  " + str(data))
         self.set_msg(data)
 
+        now = rospy.Time.now().to_sec()
+
+        if c["verbose"]:
+            rospy.loginfo("Received:  " + str(now))
+            rospy.loginfo("Timestamp: " + str(timestamp))
+            rospy.loginfo("Since sent:" + str(now - timestamp))
+            rospy.loginfo("Actions:   " + str(data))
+
+        self.timestamp = timestamp
+
     def set_msg(self, data):
-        self.msg = JointState(velocity=[0, 0, 0, 0, data[0], 0, 0])
+        a_q4 = data[0]
+        self.msg = JointState(velocity=[0, 0, 0, 0, a_q4, 0, 0])
 
 
 if __name__ == '__main__':

@@ -78,8 +78,9 @@ class Connector(object):
 
         # Check joint constraints
         if abs(q4) > self.c["state_space_constraint"]['q4']:
-            self.panda_pub.move_to_start()
+            rospy.sleep(1.5 * (1 / self.c["clock_freq"]))
             self.client.send_flush()
+            self.panda_pub.move_to_start()
             print "Violated state space constraints"
             rospy.sleep(3)
 
@@ -96,15 +97,7 @@ class Connector(object):
         rospy.loginfo("Panda: " + str(panda_time.to_sec()))
 
     def __del__(self):
-        send_zero_action()
-
-
-def send_zero_action():
-    topic = "/ros_subscriber_controller/controller_command/joint_velocity"
-    vel_pub = rospy.Publisher(topic, JointState, queue_size=1)
-    vel_msg = JointState()
-    vel_msg.velocity = [0, 0, 0, 0, 0, 0, 0]
-    vel_pub.publish(vel_msg)
+        self.panda_pub.stop()
 
 
 if __name__ == '__main__':
@@ -117,5 +110,4 @@ if __name__ == '__main__':
         rospy.loginfo("Spinning...")
         rospy.spin()
     except KeyboardInterrupt:
-        send_zero_action()
         print("Shutting down")
