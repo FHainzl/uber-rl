@@ -49,7 +49,6 @@ class Connector(object):
             # Check if every time step is sent
             # If time difference bigger than 1.5 times period, let server know
             dt = current_clock - self.last_clock
-            print dt
             if dt > 1.5 * self.c["clock_freq"] ** -1:
                 self.client.send_flush()
             else:
@@ -78,13 +77,15 @@ class Connector(object):
 
         # Check joint constraints
         if abs(q4) > self.c["state_space_constraint"]['q4']:
-            rospy.sleep(1.5 * (1 / self.c["clock_freq"]))
-            self.client.send_flush()
-            self.panda_pub.move_to_start()
-            print "Violated state space constraints"
-            rospy.sleep(3)
-
+            self.reset()
         self.client.send_array(total_state)
+
+    def reset(self):
+        rospy.sleep(1.5 * (1 / self.c["clock_freq"]))
+        self.client.send_flush()
+        self.panda_pub.move_to_start()
+        print "Violated state space constraints"
+        rospy.sleep(3)
 
     @staticmethod
     def print_times(clock, angle, panda):

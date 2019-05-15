@@ -12,5 +12,5 @@ config = {
     "RL_PORT": 44444,
     "bufsize": 1024,
 
-    "state_space_constraint": {'q4': 1.57},
+    "state_space_constraint": {'q4': 2},
 }

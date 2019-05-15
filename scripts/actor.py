@@ -29,11 +29,13 @@ class Actor(Server):
             if since_state_recoreded > 1.5 * (1 / c["clock_freq"]):
                 self.msg = PandaPublisher.stop_msg
 
-            rospy.loginfo("Published:" + str(now))
-            rospy.loginfo("Action:   " + str(self.msg.velocity[4]))
-            rospy.loginfo("Since state recorded:" + str(since_state_recoreded))
-
             self.panda_pub.publish(self.msg)
+
+            if c["verbose"]:
+                rospy.loginfo("Published:" + str(now))
+                rospy.loginfo("Action:   " + str(self.msg.velocity[4]))
+                rospy.loginfo("Since state recorded:" + str(since_state_recoreded))
+
 
     def callback(self, timestamp, data):
         """
