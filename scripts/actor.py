@@ -17,11 +17,16 @@ class Actor(Server):
                                           self.clock_callback)
 
         self.timestamp = None
+        self.last_published_timestamp = None
 
     def clock_callback(self, data):
-        if self.msg != PandaPublisher.stop_msg:
+        # Only publish if you have new information
+        if not self.timestamp == self.last_published_timestamp:
             now = rospy.Time.now().to_sec()
-            since_state_recoreded = now - self.timestamp
+            try:
+                since_state_recoreded = now - self.timestamp
+            except TypeError:
+                since_state_recoreded = 0.0
 
             if since_state_recoreded > 2.5 * (1 / c["clock_freq"]):
                 rospy.loginfo("SINCE STATE RECORDED: " +
@@ -30,12 +35,12 @@ class Actor(Server):
                 self.msg = PandaPublisher.stop_msg
 
             self.panda_pub.publish(self.msg)
+            self.last_published_timestamp = self.timestamp
 
             if c["verbose"]:
                 rospy.loginfo("Published:" + str(now))
                 rospy.loginfo("Action:   " + str(self.msg.velocity[4]))
                 rospy.loginfo("Since state recorded:" + str(since_state_recoreded))
-
 
     def callback(self, timestamp, data):
         """
@@ -45,6 +50,7 @@ class Actor(Server):
         :return:
         """
         self.set_msg(data)
+        self.timestamp = timestamp
 
         now = rospy.Time.now().to_sec()
 
@@ -53,8 +59,6 @@ class Actor(Server):
             rospy.loginfo("Timestamp: " + str(timestamp))
             rospy.loginfo("Since sent:" + str(now - timestamp))
             rospy.loginfo("Actions:   " + str(data))
-
-        self.timestamp = timestamp
 
     def set_msg(self, data):
         a_q4 = data[0]

@@ -51,6 +51,7 @@ class Connector(object):
             dt = current_clock - self.last_clock
             if dt > 1.5 * self.c["clock_freq"] ** -1:
                 self.client.send_flush()
+                rospy.loginfo("Dropped a state!")
             else:
                 self.send_state(current_clock, angle, panda)
         except TypeError:
@@ -84,8 +85,9 @@ class Connector(object):
         rospy.sleep(1.5 * (1 / self.c["clock_freq"]))
         self.client.send_flush()
         self.panda_pub.move_to_start()
-        print "Violated state space constraints"
+        print "Resetting..."
         rospy.sleep(3)
+        print "Reset!"
 
     @staticmethod
     def print_times(clock, angle, panda):
