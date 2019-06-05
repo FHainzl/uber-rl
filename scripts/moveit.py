@@ -39,7 +39,7 @@ class Joints(object):
             (3, -pi / 2),
             (4, 0),
             (5, pi / 2),
-            (6, pi / 4)
+            (6, pi / 2)
         )
 
     def print_joints(self):

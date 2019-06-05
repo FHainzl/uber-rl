@@ -82,6 +82,7 @@ class Connector(object):
         self.client.send_array(total_state)
 
     def reset(self):
+        self.panda_pub.stop()
         rospy.sleep(1.5 * (1 / self.c["clock_freq"]))
         self.client.send_flush()
         self.panda_pub.move_to_start()

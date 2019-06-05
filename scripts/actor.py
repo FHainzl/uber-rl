@@ -11,7 +11,7 @@ class Actor(Server):
     def __init__(self, port, bufsize):
         Server.__init__(self, port, bufsize)
 
-        self.msg = PandaPublisher.stop_msg
+        self.effort = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.panda_pub = PandaPublisher()
         self.clock_sub = rospy.Subscriber("/tick", TimeReference,
                                           self.clock_callback)
@@ -31,16 +31,19 @@ class Actor(Server):
             if since_state_recoreded > 2.5 * (1 / c["clock_freq"]):
                 rospy.loginfo("SINCE STATE RECORDED: " +
                               str(since_state_recoreded))
-            if since_state_recoreded > 1.5 * (1 / c["clock_freq"]):
-                self.msg = PandaPublisher.stop_msg
+            elif since_state_recoreded > 1.5 * (1 / c["clock_freq"]):
+                rospy.loginfo("Since state recorded: " +
+                              str(since_state_recoreded))
+                self.panda_pub.stop()
 
-            self.panda_pub.publish(self.msg)
+            self.panda_pub.publish_effort(self.effort)
             self.last_published_timestamp = self.timestamp
 
             if c["verbose"]:
                 rospy.loginfo("Published:" + str(now))
-                rospy.loginfo("Action:   " + str(self.msg.velocity[4]))
-                rospy.loginfo("Since state recorded:" + str(since_state_recoreded))
+                rospy.loginfo("Action:   " + str(self.effort[4]))
+                rospy.loginfo(
+                    "Since state recorded:" + str(since_state_recoreded))
 
     def callback(self, timestamp, data):
         """
@@ -62,7 +65,7 @@ class Actor(Server):
 
     def set_msg(self, data):
         a_q4 = data[0]
-        self.msg = JointState(velocity=[0, 0, 0, 0, a_q4, 0, 0])
+        self.effort = [0.0, 0.0, 0.0, 0.0, a_q4, 0.0, 0.0]
 
 
 if __name__ == '__main__':
