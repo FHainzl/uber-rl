@@ -12,19 +12,22 @@ if __name__ == '__main__':
     # topic = "/ros_subscriber_controller/controller_command/joint_command"
     # pub = rospy.Publisher(topic, JointState, queue_size=1)
     pub = PandaPublisher()
-
-    vel = [0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0]
-    vel_neg = [0.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0]
-    rospy.sleep(1)
-    pub.publish_effort(vel)
-    rospy.sleep(0.5)
-    pub.publish_effort(vel_neg)
-    rospy.sleep(1)
-    pub.publish_effort(vel)
-    rospy.sleep(0.5)
-    pub.stop()
     rospy.sleep(1)
     pub.move_to_start()
+
+
+    # vel = [0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0]
+    # vel_neg = [0.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0]
+    # rospy.sleep(1)
+    # pub.publish_effort(vel)
+    # rospy.sleep(0.5)
+    # pub.publish_effort(vel_neg)
+    # rospy.sleep(1)
+    # pub.publish_effort(vel)
+    # rospy.sleep(0.5)
+    # pub.stop()
+    # rospy.sleep(1)
+    # pub.move_to_start()
     # vel_msg = JointState(velocity=[0.0, 0.0, 0.0, 0.0, -0.5, 0.0, 0.0])
     #
     # r = rospy.Rate(0.2)
