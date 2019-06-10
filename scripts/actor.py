@@ -63,9 +63,12 @@ class Actor(Server):
             rospy.loginfo("Since sent:" + str(now - timestamp))
             rospy.loginfo("Actions:   " + str(data))
 
+    def reset(self):
+        self.panda_pub.move_to_start()
+
     def set_msg(self, data):
-        a_q4 = data[0]
-        self.effort = [0.0, 0.0, 0.0, 0.0, a_q4, 0.0, 0.0]
+        a_q2 = data[0]
+        self.effort = [0.0, 0.0, a_q2, 0.0, 0.0, 0.0, 0.0]
 
 
 if __name__ == '__main__':

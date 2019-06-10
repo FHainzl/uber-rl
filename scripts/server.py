@@ -21,6 +21,10 @@ class Server:
             if output.strip() == b"disconnect":
                 rospy.loginfo("Received disconnect message.  Shutting down.")
                 break
+            elif output.strip() == b"reset":
+                rospy.loginfo("Received reset message.  Resetting!")
+                self.conn.send(b"ack")
+                self.reset()
             elif output:
                 timestamp, data = self.receive_array(output)
                 self.callback(timestamp, data)
@@ -34,6 +38,9 @@ class Server:
         return timestep, data
 
     def callback(self, timestamp, data):
+        raise NotImplementedError
+
+    def reset(self):
         raise NotImplementedError
 
     def __del__(self):

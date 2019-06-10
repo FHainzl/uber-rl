@@ -72,10 +72,17 @@ class Connector(object):
         # dq2, dq3 = dq[2], dq[3]
         # total_state = np.array([timestamp, angle, q2, q3, dq2, dq3])
 
+        q2 = q[2]
+        dq2 = dq[2]
+
         q4 = q[4]
         dq4 = dq[4]
-        total_state = np.array([timestamp, angle, q4, dq4])
 
+        total_state = np.array([timestamp, angle, q2, dq2])
+
+        # Check joint constraints
+        if abs(q2) > self.c["state_space_constraint"]['q2']:
+            self.reset()
         # Check joint constraints
         if abs(q4) > self.c["state_space_constraint"]['q4']:
             self.reset()

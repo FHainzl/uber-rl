@@ -35,7 +35,7 @@ class Joints(object):
         self.q_start = (
             (0, -pi / 2),
             (1, 0),
-            (2, -pi / 2),
+            (2, 0),
             (3, -pi / 2),
             (4, 0),
             (5, pi / 2),
