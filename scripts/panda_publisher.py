@@ -5,7 +5,7 @@ from sensor_msgs.msg import JointState
 
 
 class PandaPublisher(object):
-    q_start = [-pi / 2, 0, 0, -pi / 2, 0, pi / 2, pi / 2]
+    q_start = [-2.88, 0, 0, -pi / 2, 0, pi / 2, pi / 2]
     q_dot_stop = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     def __init__(self):

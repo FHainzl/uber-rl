@@ -16,23 +16,30 @@ class SafetyNet(object):
 
     def safety_callback(self, data):
         q = data.q
+        dq = data.dq
         q1 = q[1]
+        dq1 = dq[1]
         q2 = q[2]
+        dq2 = dq[2]
         q3 = q[3]
+        dq3 = dq[3]
 
-        if q1 < c["state_space_constraint"]['q1'][0] or \
-                q1 > c["state_space_constraint"]['q1'][1]:
-            self.stop()
-        if q2 < c["state_space_constraint"]['q2'][0] or \
-                q2 > c["state_space_constraint"]['q2'][1]:
-            self.stop()
-        # Check joint constraints
-        if q3 < c["state_space_constraint"]['q3'][0] or \
-                q3 > c["state_space_constraint"]['q3'][1]:
-            self.stop()
+        tol = 0.3
+        if (q1 < c["state_space_constraint"]['q1'][0] - tol and dq1 < -0.1) or \
+                (q2 < c["state_space_constraint"]['q2'][
+                    0] - tol and dq2 < -0.1) or \
+                (q3 < c["state_space_constraint"]['q3'][
+                    0] - tol and dq3 < -0.1) or \
+                (q1 > c["state_space_constraint"]['q1'][
+                    1] + tol and dq1 > 0.1) or \
+                (q2 > c["state_space_constraint"]['q2'][
+                    1] + tol and dq2 > 0.1) or \
+                (q3 > c["state_space_constraint"]['q3'][1] + tol and dq3 > 0.1):
+            self.reset()
 
-    def stop(self):
-        self.panda_pub.stop()
+    def reset(self):
+        rospy.loginfo("Resetting")
+        self.panda_pub.move_to_start()
 
 
 if __name__ == '__main__':

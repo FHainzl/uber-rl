@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from math import pi
+
 import rospy
 from panda_publisher import PandaPublisher
 
@@ -13,8 +15,10 @@ if __name__ == '__main__':
     # pub.move_to_start()
     # pub.move_to_start()
     # rospy.sleep(3)
-    vel = [0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0]
-    pub.publish_velocity(vel)
+    position = [-2.8, 0, 0, -pi / 2, 0, pi / 2, pi / 2]
+    # position[1] = +0.3
+    # position[2] = -0.3
+    pub.publish_position(position)
     # rospy.sleep(3)
     # pub.move_to_start()
 

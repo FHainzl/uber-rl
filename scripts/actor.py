@@ -35,7 +35,11 @@ class Actor(Server):
                 rospy.loginfo("Since state recorded: " +
                               str(since_state_recoreded))
 
-            self.panda_pub.publish_effort(self.effort)
+            debug = False
+            if debug:
+                print "Published effort:", self.effort
+            else:
+                self.panda_pub.publish_effort(self.effort)
             self.last_published_timestamp = self.timestamp
 
             if c["verbose"]:
@@ -66,8 +70,9 @@ class Actor(Server):
         self.panda_pub.move_to_start()
 
     def set_msg(self, data):
-        a_q2 = data[0]
-        self.effort = [0.0, 0.0, a_q2, 0.0, 0.0, 0.0, 0.0]
+        a_q1 = data[0]
+        a_q2 = data[1]
+        self.effort = [0.0, a_q1, a_q2, 0.0, 0.0, 0.0, 0.0]
 
 
 if __name__ == '__main__':

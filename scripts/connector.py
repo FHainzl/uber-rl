@@ -81,7 +81,7 @@ class Connector(object):
         q3 = q[3]
         dq3 = dq[3]
 
-        total_state = np.array([timestamp, angle, q2, dq2])
+        total_state = np.array([timestamp, angle, q1, q2, dq1, dq2])
 
         # Check joint constraints
         # No need to send flush, because reset() takes time

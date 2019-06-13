@@ -33,7 +33,7 @@ class Joints(object):
         self.print_joints()
         self.group.clear_pose_targets()
         self.q_start = (
-            (0, -pi / 2),
+            (0, -2.88),
             (1, 0),
             (2, 0),
             (3, -pi / 2),
