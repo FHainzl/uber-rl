@@ -1,9 +1,6 @@
 #!/usr/bin/env python
-import time
-from math import pi
 
 import rospy
-from sensor_msgs.msg import JointState
 from panda_publisher import PandaPublisher
 
 if __name__ == '__main__':
@@ -13,8 +10,13 @@ if __name__ == '__main__':
     # pub = rospy.Publisher(topic, JointState, queue_size=1)
     pub = PandaPublisher()
     rospy.sleep(1)
-    pub.move_to_start()
-
+    # pub.move_to_start()
+    # pub.move_to_start()
+    # rospy.sleep(3)
+    vel = [0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0]
+    pub.publish_velocity(vel)
+    # rospy.sleep(3)
+    # pub.move_to_start()
 
     # vel = [0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0]
     # vel_neg = [0.0, 0.0, 0.0, 0.0, -10.0, 0.0, 0.0]

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from sensor_msgs.msg import JointState, TimeReference
+from sensor_msgs.msg import TimeReference
 
 from config import config as c
 from panda_publisher import PandaPublisher
@@ -34,7 +34,6 @@ class Actor(Server):
             elif since_state_recoreded > 1.5 * (1 / c["clock_freq"]):
                 rospy.loginfo("Since state recorded: " +
                               str(since_state_recoreded))
-                self.panda_pub.stop()
 
             self.panda_pub.publish_effort(self.effort)
             self.last_published_timestamp = self.timestamp

@@ -14,6 +14,7 @@
     </include>
     <node pkg="uber-cv" type="image_to_angle.py" name="image2angle"
           output="screen"/>
+    <node pkg="uber-rl" type="safetynet.py" name="safetynet" output="screen"/>
     <node pkg="uber-rl" type="clock.py" name="clock" output="screen"/>
     <node pkg="uber-rl" type="connector.py" name="connector" output="screen"/>
     <node pkg="uber-rl" type="actor.py" name="actor" output="screen"/>

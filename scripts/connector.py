@@ -50,6 +50,7 @@ class Connector(object):
             # If time difference bigger than 1.5 times period, let server know
             dt = current_clock - self.last_clock
             if dt > 1.5 * self.c["clock_freq"] ** -1:
+                self.panda_pub.stop()
                 self.client.send_flush()
                 rospy.loginfo("Dropped a state!")
             else:
@@ -71,21 +72,32 @@ class Connector(object):
         # q2, q3 = q[2], q[3]
         # dq2, dq3 = dq[2], dq[3]
         # total_state = np.array([timestamp, angle, q2, q3, dq2, dq3])
+        q1 = q[1]
+        dq1 = dq[1]
 
         q2 = q[2]
         dq2 = dq[2]
 
-        q4 = q[4]
-        dq4 = dq[4]
+        q3 = q[3]
+        dq3 = dq[3]
 
         total_state = np.array([timestamp, angle, q2, dq2])
 
         # Check joint constraints
-        if abs(q2) > self.c["state_space_constraint"]['q2']:
+        # No need to send flush, because reset() takes time
+        # so callback sends flush
+        if q1 < self.c["state_space_constraint"]['q1'][0] or \
+                q1 > self.c["state_space_constraint"]['q1'][1]:
+            self.reset()
+        if q2 < self.c["state_space_constraint"]['q2'][0] or \
+                q2 > self.c["state_space_constraint"]['q2'][1]:
             self.reset()
         # Check joint constraints
-        if abs(q4) > self.c["state_space_constraint"]['q4']:
+        if q3 < self.c["state_space_constraint"]['q3'][0] or \
+                q3 > self.c["state_space_constraint"]['q3'][1]:
             self.reset()
+
+        # Send the state, so the client knows what happened
         self.client.send_array(total_state)
 
     def reset(self):

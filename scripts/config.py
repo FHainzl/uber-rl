@@ -13,5 +13,7 @@ config = {
     "RL_PORT": 44444,
     "bufsize": 1024,
 
-    "state_space_constraint": {'q2': pi / 4, 'q4': 2},
+    "state_space_constraint": {'q1': (-pi / 10, pi / 10),
+                               'q2': (-pi / 4, pi / 4),
+                               'q3': (-pi / 0.1, pi / 0.1)},
 }
